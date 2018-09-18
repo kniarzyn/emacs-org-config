@@ -45,6 +45,22 @@
       (progn
 	(load-theme 'sanityinc-tomorrow-blue t)))
   #+END_SRC
+* org-mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package org-bullets
+      :ensure t
+      :config
+      (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+    (defun toggle-org-html-export-on-save ()
+      (interactive)
+      (if (memq 'org-html-export-to-html after-save-hook)
+	  (progn
+	    (remove-hook 'after-save-hook 'org-html-export-to-html t)
+	    (message "Disabled org html export on save for current buffer..."))
+	(add-hook 'after-save-hook 'org-html-export-to-html nil t)
+	(message "Enabled org html export on save for current buffer...")))
+  #+END_SRC
 * swiper
   #+BEGIN_SRC emacs-lisp
 
