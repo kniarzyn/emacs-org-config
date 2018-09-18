@@ -1,0 +1,116 @@
+#+STARTIP: overview
+* interface tweaks
+  #+BEGIN_SRC emacs-lisp
+    (tool-bar-mode -1)
+    (menu-bar-mode -1)
+    (scroll-bar-mode -1)
+    (setq inhibit-startup-message t)
+    (fset 'yes-or-no-p 'y-or-n-p)
+    (global-set-key (kbd "<f5>") 'revert-buffer)
+    (setq ido-enable-flex-matching t)
+    (setq ido-everywhere t)
+    (ido-mode 1)
+    (defalias 'list-buffers 'ibuffer)
+  #+END_SRC
+* common small packages
+  #+BEGIN_SRC emacs-lisp
+    (use-package try
+      :ensure t)
+
+    (use-package which-key
+      :ensure t 
+      :config
+      (which-key-mode))
+  #+END_SRC
+* windows managment
+  #+BEGIN_SRC emacs-lisp
+    ;; Move between windows with SHIFT+arrow
+    ;; (windmove-default-keybindings)
+    ;; or
+    (use-package ace-window
+      :ensure t
+      :init
+      (progn
+	(global-set-key [remap other-window] 'ace-window)
+	(custom-set-faces
+	 '(aw-leading-char-face
+	   ((t (:inherit ace-jump-face-foreground :height 3.0))))) 
+	))
+  #+END_SRC
+* themes and fontse
+  #+BEGIN_SRC emacs-lisp
+    (use-package color-theme-sanityinc-tomorrow
+      :ensure t
+      :init
+      (progn
+	(load-theme 'sanityinc-tomorrow-blue t)))
+  #+END_SRC
+* swiper
+  #+BEGIN_SRC emacs-lisp
+
+    ;; it looks like counsel is a requirement for swiper
+    (use-package counsel
+      :ensure t
+      )
+
+    (use-package swiper
+      :ensure try
+      :config
+      (progn
+	(ivy-mode 1)
+	(setq ivy-use-virtual-buffers t)
+	(global-set-key "\C-s" 'swiper)
+	(global-set-key (kbd "C-c C-r") 'ivy-resume)
+	(global-set-key (kbd "<f6>") 'ivy-resume)
+	(global-set-key (kbd "M-x") 'counsel-M-x)
+	(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+	(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+	(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+	(global-set-key (kbd "<f1> l") 'counsel-load-library)
+	(global-set-key (kbd "C-c k") 'counsel-ag)
+	(global-set-key (kbd "C-x l") 'counsel-locate)
+	(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+  #+END_SRC
+* avy navigation
+  #+BEGIN_SRC emacs-lisp
+    (use-package avy
+      :ensure t
+      :init (avy-setup-default)
+      :config (progn
+		;; Makes it easier to see the candidates
+		(setq avy-background t)
+		;; Shows both the candidates over the text
+		(setq avy-styles-alist '((avy-goto-char-2 . at-full))))
+      :bind (;; Search by 2 chars
+	     ("C-'" . avy-goto-char-2)
+	     ;; Search by first char of a word
+	     ("C-\"" . avy-goto-word-1)))
+  #+END_SRC
+* autocomplete (autocomplete or company)
+  #+BEGIN_SRC emacs-lisp
+    ;; (use-package auto-complete
+    ;;   :ensure t
+    ;;   :init
+    ;;   (progn
+    ;;     (ac-config-default)
+    ;;     (global-auto-complete-mode t)))
+    (use-package company
+      :ensure t
+      :config
+      (progn
+	(add-hook 'cider-repl-mode-hook #'company-mode)
+	(add-hook 'cider-mode-hook #'company-mode)))
+  #+END_SRC
+* clojure/clojurescript
+  #+BEGIN_SRC emacs-lisp
+    ;; CIDER
+    (use-package cider
+      :ensure t)
+    (use-package clojure-mode
+      :ensure t)
+    ;; Paredit/Parinfer/Smartparens
+    (use-package parinfer
+      :ensure t)
+    ;; Company
+    ;; Magit
+  #+END_SRC
