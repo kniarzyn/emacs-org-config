@@ -11,6 +11,11 @@
     (setq ido-everywhere t)
     (ido-mode 1)
     (defalias 'list-buffers 'ibuffer)
+    (setq make-backup-files nil) ; stop creating backup~ files
+    (setq auto-save-default nil) ; stop creating #autosave# files
+
+    ;; Podświetlanie bieżącej linii
+    (global-hl-line-mode t)
   #+END_SRC
 * common small packages
   #+BEGIN_SRC emacs-lisp
@@ -21,6 +26,28 @@
       :ensure t 
       :config
       (which-key-mode))
+
+    ;; flashes the cursor's line when you scroll
+    (use-package beacon
+      :ensure t
+      :config
+      (beacon-mode 1)
+      ;; this color looks good for the zenburn theme but not for the one
+      ;; I'm using for the videos
+      (setq beacon-color "#006666")
+      )
+
+    ;; deletes all the whitespace when you hit backspace or delete
+    (use-package hungry-delete
+      :ensure t
+      :config
+      (global-hungry-delete-mode))
+
+    ;; expand the marked region in semantic increments (negative prefix to reduce region)
+    (use-package expand-region
+      :ensure t
+      :config 
+      (global-set-key (kbd "C-=") 'er/expand-region))
   #+END_SRC
 * windows managment
   #+BEGIN_SRC emacs-lisp
@@ -44,6 +71,12 @@
       :init
       (progn
 	(load-theme 'sanityinc-tomorrow-blue t)))
+    ;; Set default font
+    (set-face-attribute 'default nil
+			:family "Monaco"
+			:height 140
+			:weight 'normal
+			:width 'normal)
   #+END_SRC
 * org-mode
   #+BEGIN_SRC emacs-lisp
@@ -97,6 +130,11 @@
 	(setq ivy-re-builders-alist
 	  '((t . ivy--regex-fuzzy)))))
   #+END_SRC
+* magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t)
+#+END_SRC
 * avy navigation
   #+BEGIN_SRC emacs-lisp
     (use-package avy
@@ -123,9 +161,59 @@
     (use-package company
       :ensure t
       :config
-      (progn
-	(add-hook 'cider-repl-mode-hook #'company-mode)
-	(add-hook 'cider-mode-hook #'company-mode)))
+      (add-hook 'after-init-hook 'global-company-mode))
+  #+END_SRC
+* projectile + dumbjump
+  #+BEGIN_SRC emacs-lisp
+    ;; projectile
+    (use-package projectile
+      :ensure t
+      :config
+      (projectile-global-mode)
+      (setq projectile-completion-system 'ivy))
+
+    (use-package counsel-projectile
+      :ensure t
+      :config
+      (counsel-projectile-mode t)
+      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+    (use-package dumb-jump
+      :bind (("M-g o" . dumb-jump-go-other-window))
+      ("M-g j" . dumb-jump-go)
+      ("M-g x" . dumb-jump-go-prefer-external)
+      ("M-g z" . dumb-jump-go-prefer-external-other-window)
+      :config (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+      :ensure
+  
+      :config) 
+    ;; (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+    :init
+    (dumb-jump-mode
+     :ensure)
+  #+END_SRC
+
+* aggressive-indent
+  #+BEGIN_SRC emacs-lisp
+    (use-package aggressive-indent
+      :ensure t
+      ;; :config
+      ;; (add-hook 'clojure-mode-hook 'aggressive-indent-mode)
+      ;; (add-hook 'emacs-lisp-mode-hook  'aggressive-indent-mode)
+      )
+  #+END_SRC
+* rainbow-delimiters
+  #+BEGIN_SRC emacs-lisp
+    (use-package rainbow-delimiters
+	:ensure t
+	:config
+	(add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  #+END_SRC
+* parinfer
+  #+BEGIN_SRC emacs-lisp
+    (use-package parinfer
+      :ensure t
+      :hook ((clojure-mode emacs-lisp-mode) . parinfer-mode))
   #+END_SRC
 * clojure/clojurescript
   #+BEGIN_SRC emacs-lisp
@@ -134,9 +222,9 @@
       :ensure t)
     (use-package clojure-mode
       :ensure t)
-    ;; Paredit/Parinfer/Smartparens
-    (use-package parinfer
-      :ensure t)
+    ;; Paredit/Parinfer/Smartparen
     ;; Company
+    (add-hook 'cider-repl-mode-hook #'company-mode)
+    (add-hook 'cider-mode-hook #'company-mode)
     ;; Magit
   #+END_SRC
